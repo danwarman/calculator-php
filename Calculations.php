@@ -1,43 +1,43 @@
 <?php
-  $filename = 'calculations.csv';
+  $filename = "calculations.csv";
 
-  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    header('Content-type: application/json');
+  if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    header("Content-type: application/json");
 
     // Get the calculated result from the body
-    $calcResult = isset($_POST['result'])
-      ? $_POST['result']
-      : '';
+    $calcResult = isset($_POST["result"])
+      ? $_POST["result"]
+      : "";
 
     // Get the current datetime and format to MySQL
     $now = new DateTime();
-    $createdAt = $now->format('Y-m-d H:i:s');
+    $createdAt = $now->format("Y-m-d H:i:s");
 
     // Get IP address and (if set) proxy ip
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $forwardedIp = isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-      ? $_SERVER['HTTP_X_FORWARDED_FOR']
-      : '';
+    $ip = $_SERVER["REMOTE_ADDR"];
+    $forwardedIp = isset($_SERVER["HTTP_X_FORWARDED_FOR"])
+      ? $_SERVER["HTTP_X_FORWARDED_FOR"]
+      : "";
 
     // Get user agent and browser
-    $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    $userAgent = $_SERVER["HTTP_USER_AGENT"];
 
     // TODO: Need to sort browscap.ini
     // $browser = get_browser(null, true);
-    $browser = '';
+    $browser = "";
 
     // Configure rows and values
-    $keys = ['ip', 'forwarded_ip', 'user_agent', 'browser', 'result', 'created_at'];
+    $keys = ["ip", "forwarded_ip", "user_agent", "browser", "result", "created_at"];
 
     $values = array (
       [$ip, $forwardedIp, $userAgent, $browser, $calcResult, $createdAt]
     );
 
     if (!file_exists($filename)) {
-      $handle = fopen($filename, 'a');
+      $handle = fopen($filename, "a");
       fputcsv($handle, $keys);
     } else {
-      $handle = fopen($filename, 'a');
+      $handle = fopen($filename, "a");
     }
 
     foreach ($values as $row) {
@@ -47,16 +47,16 @@
     fclose($handle);
 
     $arr = array (
-      'success' => true,
-      'message' =>'Your result has been saved.',
-      'errors' => [],
-      'row_data' => array_combine($keys, $values[0])
+      "success" => true,
+      "message" =>"Your result has been saved.",
+      "errors" => [],
+      "row_data" => array_combine($keys, $values[0])
     );
 
     echo json_encode($arr);
   }
 
-  if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+  if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $row = 1;
     $keys = array();
     $values = array();
